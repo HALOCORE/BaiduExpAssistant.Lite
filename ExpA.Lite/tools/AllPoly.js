@@ -9,3 +9,7 @@ if (window.external.notify) {
         console.log("[window.external.notify]", msg);
     }
 }
+
+let testRoot = document.createElement("div");
+document.appendChild(testRoot);
+ReactDOM.render(RNE_Test, testRoot);
