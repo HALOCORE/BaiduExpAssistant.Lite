@@ -1,3 +1,4 @@
+console.log("========== AllComps.js ==========");
 function RN_SplitPanel(props) {
   let {title} = props;
   return (
@@ -7,5 +8,4 @@ function RN_SplitPanel(props) {
     </div>
   )
 }
-
-RNE_Test = <RN_SplitPanel/>;
+console.log("^^^^^^^^^^ AllComps.js ^^^^^^^^^^");
