@@ -9,8 +9,20 @@ let RNStyles = {
     border: "wheat solid 1px"
   },
   bigButton: {
-    fontSize: 16,
-    padding: "5px 25px",
+    fontSize: 14,
+    padding: "5px 15px",
+    marginTop: "6px"
+  },
+  uploadEnabled: {
+    fontSize: 14,
+    padding: "5px 15px",
+    marginTop: "6px",
+    color: "green",
+    fontWeight: 900
+  },
+  uploadDisabled: {
+    fontSize: 14,
+    padding: "5px 15px",
     marginTop: "6px"
   },
   blockLabel: {
@@ -80,8 +92,12 @@ function saveCanvas(method) {
 
   if (method == 0) {
     setTimeout(saveCanvasPhrase20, 200);
-  } else {
+  } else if (method === 1) {
     setTimeout(saveCanvasPhrase21, 200);
+  } else if (method === 2) {
+    setTimeout(saveCanvasPhrase22, 200);
+  } else {
+    console.error("# saveCanvas unknown method: " + method);
   }
 }
 
@@ -97,6 +113,26 @@ function saveCanvasPhrase20() {
 function saveCanvasPhrase21() {
   try {
     window.external.notify("SAVEAS-PIC: " + 600 / 240 + " | 600 | 240");
+  } catch (e) {}
+
+  ;
+  setTimeout(saveCanvasPhrase3, 200);
+}
+
+function saveCanvasPhrase22() {
+  try {
+    console.log("# saveCanvasPhrase22 called.");
+    window.external.getUploadPic(dataUrl => {
+      console.log("# external.getUploadPic response with dataUrl.");
+      let fakeFile = window.dataURLtoFakeFile(dataUrl, "brief.png");
+
+      window._onUploadFileChange({
+        type: "change",
+        target: {
+          "files": [fakeFile]
+        }
+      });
+    });
   } catch (e) {}
 
   ;
@@ -187,7 +223,11 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     style: RNStyles.configGroup
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\u80CC\u666F\u56FE\uFF1A"), /*#__PURE__*/React.createElement("button", {
     onClick: () => launchUrl('https://image.baidu.com/')
-  }, "\u767E\u5EA6\u56FE\u7247")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
+  }, "\u767E\u5EA6\u56FE\u7247"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => launchUrl('https://cn.bing.com/images/')
+  }, "Bing\u56FE\u7247"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => launchUrl('https://pic.sogou.com/')
+  }, "\u641C\u72D7\u56FE\u7247")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
     checked: useBigPic,
     onChange: () => setUseBigPic(!useBigPic),
     type: "checkbox",
@@ -248,36 +288,49 @@ function RN_BriefCurrentUrlsZone() {
   }, "\u56FE\u6807: ", iconSrc));
 }
 
-function RN_BriefPicEditor() {
-  const [settingsVisible, setSettingsVisible] = RNState['settingsVisible'] = React.useState(false);
+function RN_BriefControlZone(props) {
+  let {
+    settingsVisible,
+    setSettingsVisible
+  } = props;
   const [isAutoWrap, setIsAutoWrap] = RNState['isAutoWrap'] = React.useState(true);
-  console.log("# RN_BriefPicEditor called");
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RN_BriefCurrentUrlsZone, null), /*#__PURE__*/React.createElement("canvas", {
-    width: "600",
-    height: "240",
-    style: RNStyles.mainCanvas,
-    id: "brief-canvas"
-  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+  const [isUploaderHacked] = RNState['isUploaderHacked'] = React.useState(false);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    id: "toggle-settings",
+    onClick: () => setSettingsVisible(!settingsVisible),
+    style: RNStyles.bigButton
+  }, settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
     onClick: () => saveCanvas(0),
     style: RNStyles.bigButton
   }, "\u4FDD\u5B58\u7B80\u4ECB\u56FE"), /*#__PURE__*/React.createElement("button", {
     onClick: () => saveCanvas(1),
     style: RNStyles.bigButton
   }, "\u7B80\u4ECB\u56FE\u53E6\u5B58\u4E3A"), /*#__PURE__*/React.createElement("button", {
-    id: "toggle-settings",
-    onClick: () => setSettingsVisible(!settingsVisible),
-    style: RNStyles.bigButton
-  }, settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closeBriefPic(),
-    style: RNStyles.bigButton
-  }, "\u9690\u85CF"), /*#__PURE__*/React.createElement("input", {
+    disabled: !isUploaderHacked,
+    style: isUploaderHacked ? RNStyles.uploadEnabled : RNStyles.uploadDisabled,
+    onClick: () => saveCanvas(2)
+  }, isUploaderHacked ? '>>> 一键上传 >>>' : '请先上传步骤图片', " "), /*#__PURE__*/React.createElement("input", {
     checked: isAutoWrap,
     onChange: () => setIsAutoWrap(!isAutoWrap),
     type: "checkbox",
     style: {
       marginLeft: 15
     }
-  }), "\u81EA\u52A8\u6362\u884C"), /*#__PURE__*/React.createElement("div", {
+  }), "\u81EA\u52A8\u6362\u884C");
+}
+
+function RN_BriefPicEditor() {
+  const [settingsVisible, setSettingsVisible] = RNState['settingsVisible'] = React.useState(false);
+  console.log("# RN_BriefPicEditor called");
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RN_BriefCurrentUrlsZone, null), /*#__PURE__*/React.createElement("canvas", {
+    width: "600",
+    height: "240",
+    style: RNStyles.mainCanvas,
+    id: "brief-canvas"
+  }), /*#__PURE__*/React.createElement(RN_BriefControlZone, {
+    settingsVisible: settingsVisible,
+    setSettingsVisible: setSettingsVisible
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: settingsVisible ? "block" : "none",
       padding: 15,
@@ -337,7 +390,14 @@ function AddBriefImgEditor() {
   let briefImgEditorElement = document.getElementById("brief-img-editor");
 
   function updateBriefImage() {
-    if (briefImgEditorElement.style.display == "none") return; //update brief icon
+    if (briefImgEditorElement.style.display == "none") return;
+    let [isUploaderHacked, setIsUploaderHacked] = RNState['isUploaderHacked'];
+
+    if (window._onUploadFileChange && !isUploaderHacked) {
+      console.log("# updateBriefImage found isUploaderHacked.");
+      setIsUploaderHacked(true);
+    } //update brief icon
+
 
     let pairs = [];
 

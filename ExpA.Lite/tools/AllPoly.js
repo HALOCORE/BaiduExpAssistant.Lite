@@ -3,11 +3,13 @@ window._EXTENSION_IS_CHROME_ = false;
 try {
     window.external.notify("TEST_NOTIFY");
     console.log("百度经验个人助手环境");
+
     console.logerr = (err) => {
         var hiddenErrB = document.createElement('div');
         hiddenErrB.innerText = err.message;
         console.error("# LOGERR:" + hiddenErrB.innerText);
     }
+
     window.external._getImageDict = {};
     window.external.getImage = (url, onSucceed, onFailed) => {
         url = url.trim();
@@ -32,10 +34,19 @@ try {
             window.external._getImageDict[url]['onFailed'](message);
         } catch(e) { console.error(e); }
     }
-    
+
+    window.external_getUploadPicSucceed = () => {console.warn("# external_getUploadPicSucceed empty call.")};
+    window.external_getUploadPicFailed = (message) => {console.error("# external_getUploadPicFailed: " + message)};;
+    window.external.getUploadPic = (onSucceed, onFailed) => {
+        console.log("# external.getUploadPic called.");
+        window.external.notify("GET-PIC-FOR-UPLOAD: " + 600 / 240 + " | 600 | 240");
+        window.external_getUploadPicSucceed = onSucceed;
+        if(onFailed) window.external_getUploadPicFailed = onFailed;
+    }
+
     //hacking pic uploader.
     console.log("# hacking pic uploader...");
-    var criticalElem = document.getElementsByClassName("webuploader-element-invisible")[0];
+    let criticalElem = document.getElementsByClassName("webuploader-element-invisible")[0];
     function cloneNodeGen(clone) {
         return function() {
             var ret = clone.apply(this, arguments);
@@ -57,7 +68,7 @@ try {
     }
     criticalElem.cloneNode = cloneNodeGen(criticalElem.cloneNode);
 
-    function dataURLtoFakeFile(dataurl, filename) {
+    window.dataURLtoFakeFile = (dataurl, filename) => {
         var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
         while(n--){
@@ -67,7 +78,7 @@ try {
         file.lastModifiedDate = new Date();
         file.name = filename;
         return file;
-    }
+    };
     //window._onUploadFileChange({type:"change", target:{"files": [fakeFile]}})
 } catch (e) {
     console.log("浏览器环境");

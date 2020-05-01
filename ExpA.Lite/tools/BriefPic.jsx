@@ -9,8 +9,20 @@ let RNStyles = {
     border: "wheat solid 1px"
   },
   bigButton: {
-    fontSize: 16,
-    padding: "5px 25px",
+    fontSize: 14,
+    padding: "5px 15px",
+    marginTop: "6px"
+  },
+  uploadEnabled: {
+    fontSize: 14,
+    padding: "5px 15px",
+    marginTop: "6px",
+    color: "green",
+    fontWeight: 900
+  },
+  uploadDisabled: {
+    fontSize: 14,
+    padding: "5px 15px",
     marginTop: "6px"
   },
   blockLabel: {
@@ -81,8 +93,14 @@ function saveCanvas(method) {
   if (method == 0) {
     setTimeout(saveCanvasPhrase20, 200);
   }
-  else {
+  else if (method === 1) {
     setTimeout(saveCanvasPhrase21, 200);
+  }
+  else if (method === 2) {
+    setTimeout(saveCanvasPhrase22, 200);
+  } 
+  else {
+    console.error("# saveCanvas unknown method: " + method);
   }
 
 }
@@ -92,6 +110,17 @@ function saveCanvasPhrase20() {
 }
 function saveCanvasPhrase21() {
   try { window.external.notify("SAVEAS-PIC: " + 600 / 240 + " | 600 | 240"); } catch (e) { };
+  setTimeout(saveCanvasPhrase3, 200);
+}
+function saveCanvasPhrase22() {
+  try { 
+    console.log("# saveCanvasPhrase22 called.");
+    window.external.getUploadPic((dataUrl) => {
+      console.log("# external.getUploadPic response with dataUrl.");
+      let fakeFile = window.dataURLtoFakeFile(dataUrl, "brief.png");
+      window._onUploadFileChange({ type: "change", target: { "files": [fakeFile] } });
+    });
+   } catch (e) { };
   setTimeout(saveCanvasPhrase3, 200);
 }
 function saveCanvasPhrase3() {
@@ -169,17 +198,19 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
   return (
     <div>
       <div>
-        <p><span style={{paddingRight: 20}}>每一行输入格式:</span> <b>关键词=图片链接</b></p>
-        <p><span style={{paddingRight: 20}}>最后一行输入格式(表示默认图标或图片):</span> <b>=图片链接</b></p>
+        <p><span style={{ paddingRight: 20 }}>每一行输入格式:</span> <b>关键词=图片链接</b></p>
+        <p><span style={{ paddingRight: 20 }}>最后一行输入格式(表示默认图标或图片):</span> <b>=图片链接</b></p>
       </div>
       <div style={RNStyles.configGroup}>
         <div>
           <span>背景图：</span>
           <button onClick={() => launchUrl('https://image.baidu.com/')}>百度图片</button>
+          <button onClick={() => launchUrl('https://cn.bing.com/images/')}>Bing图片</button>
+          <button onClick={() => launchUrl('https://pic.sogou.com/')}>搜狗图片</button>
         </div>
         <div>
-        <input checked={useBigPic} onChange={() => setUseBigPic(!useBigPic)}
-          type="checkbox" style={{ marginLeft: 15 }} /> 使用大图片框中的图（不使用这里的关键词匹配）
+          <input checked={useBigPic} onChange={() => setUseBigPic(!useBigPic)}
+            type="checkbox" style={{ marginLeft: 15 }} /> 使用大图片框中的图（不使用这里的关键词匹配）
         </div>
         <div style={RNStyles.noteB}>
           <span id="background-urls-note" style={{ color: backgroundNote[1] }}>{backgroundNote[0]}</span>
@@ -229,31 +260,40 @@ function RN_BriefCurrentUrlsZone() {
   )
 }
 
+function RN_BriefControlZone(props) {
+  let { settingsVisible, setSettingsVisible } = props;
+  const [isAutoWrap, setIsAutoWrap] = RNState['isAutoWrap'] = React.useState(true);
+  const [isUploaderHacked] = RNState['isUploaderHacked'] = React.useState(false);
+  return (
+    <div>
+      <button id="toggle-settings" onClick={() => setSettingsVisible(!settingsVisible)}
+        style={RNStyles.bigButton}>
+        {settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓"} </button>
+      <button onClick={() => saveCanvas(0)}
+        style={RNStyles.bigButton}>
+        保存简介图</button>
+      <button onClick={() => saveCanvas(1)}
+        style={RNStyles.bigButton}>
+        简介图另存为</button>
+      <button disabled={!isUploaderHacked}
+        style={isUploaderHacked ? RNStyles.uploadEnabled : RNStyles.uploadDisabled}
+        onClick={() => saveCanvas(2)}>
+        {isUploaderHacked ? '>>> 一键上传 >>>' : '请先上传步骤图片'} </button>
+      <input checked={isAutoWrap} onChange={() => setIsAutoWrap(!isAutoWrap)}
+        type="checkbox" style={{ marginLeft: 15 }} />
+        自动换行
+    </div>
+  );
+}
+
 function RN_BriefPicEditor() {
   const [settingsVisible, setSettingsVisible] = RNState['settingsVisible'] = React.useState(false);
-  const [isAutoWrap, setIsAutoWrap] = RNState['isAutoWrap'] = React.useState(true);
   console.log("# RN_BriefPicEditor called");
   return (
     <div>
       <RN_BriefCurrentUrlsZone />
       <canvas width="600" height="240" style={RNStyles.mainCanvas} id="brief-canvas"></canvas>
-      <div>
-        <button onClick={() => saveCanvas(0)}
-          style={RNStyles.bigButton}>
-          保存简介图</button>
-        <button onClick={() => saveCanvas(1)}
-          style={RNStyles.bigButton}>
-          简介图另存为</button>
-        <button id="toggle-settings" onClick={() => setSettingsVisible(!settingsVisible)}
-          style={RNStyles.bigButton}>
-          {settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓"} </button>
-        <button onClick={() => closeBriefPic()}
-          style={RNStyles.bigButton}>
-          隐藏</button>
-        <input checked={isAutoWrap} onChange={() => setIsAutoWrap(!isAutoWrap)}
-          type="checkbox" style={{ marginLeft: 15 }} />
-          自动换行
-      </div>
+      <RN_BriefControlZone settingsVisible={settingsVisible} setSettingsVisible={setSettingsVisible} />
       <div style={{
         display: settingsVisible ? "block" : "none",
         padding: 15,
@@ -313,8 +353,14 @@ function AddBriefImgEditor() {
   let oldBackgroundSrc = "";
   let oldIconSrc = "";
   let briefImgEditorElement = document.getElementById("brief-img-editor");
+
   function updateBriefImage() {
     if (briefImgEditorElement.style.display == "none") return;
+    let [isUploaderHacked, setIsUploaderHacked] = RNState['isUploaderHacked'];
+    if (window._onUploadFileChange && !isUploaderHacked) {
+      console.log("# updateBriefImage found isUploaderHacked.");
+      setIsUploaderHacked(true);
+    }
     //update brief icon
     let pairs = [];
     try {
@@ -351,9 +397,9 @@ function AddBriefImgEditor() {
     catch (e) {
       backgroundShowNote("输入格式不正确!", "red");
     }
-    if(RNState['useBigPic'][0]) {
+    if (RNState['useBigPic'][0]) {
       let myimg = document.getElementById("my-bigimg");
-      if(myimg && myimg.src) {
+      if (myimg && myimg.src) {
         RNState['backgroundSrc'][1](myimg.src);
       } else {
         RNState['backgroundSrc'][1]("大图片框图片不存在");
@@ -366,7 +412,7 @@ function AddBriefImgEditor() {
         }
       }
     }
-    
+
     //check canvas update.
     let isBksrc1Checked = RNState['useBigPic'][0];
     let wrapLineEnabled = RNState['isAutoWrap'][0];
