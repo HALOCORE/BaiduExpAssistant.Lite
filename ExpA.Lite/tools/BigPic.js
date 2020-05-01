@@ -73,11 +73,6 @@ console.log("========== BigPic.js ==========");
         if (oribox.childElementCount > 0)
             myimg.src = oribox.children[0].src;
         updateSize();
-
-        var tryBriefInput = document.getElementById("brief-background-bigbox");
-        if (tryBriefInput) {
-            tryBriefInput.value = oribox.children[0].src;
-        }
     });
 
     document.querySelector("#my-img-preview").addEventListener("mouseenter", function () {

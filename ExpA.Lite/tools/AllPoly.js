@@ -8,8 +8,31 @@ try {
         hiddenErrB.innerText = err.message;
         console.error("# LOGERR:" + hiddenErrB.innerText);
     }
+    window.external._getImageDict = {};
+    window.external.getImage = (url, onSucceed, onFailed) => {
+        url = url.trim();
+        console.log("# externalGetImage: " + url);
+        window.external._getImageDict[url] = {};
+        window.external._getImageDict[url]['onSucceed'] = onSucceed;
+        window.external._getImageDict[url]['onFailed'] = onFailed;
+        try {
+          window.external.notify("IMAGE-GET: " + url);
+        }
+        catch (e) { console.error(e); }
+    }
+    window.external_getImageSucceed = (url, dataUrl) => {
+        console.log("# external_getImageSucceed: " + url);
+        try {
+            window.external._getImageDict[url]['onSucceed'](dataUrl);
+        } catch(e) { console.error(e); }
+    }
+    window.external_getImageFailed = (url, message) => {
+        console.log("# external_getImageFailed: " + url);
+        try {
+            window.external._getImageDict[url]['onFailed'](message);
+        } catch(e) { console.error(e); }
+    }
 } catch (e) {
-    window.external.notify("撒达娃");
     console.log("浏览器环境");
     window._EXTENSION_IS_CHROME_ = true;
     console.log(">>> Pollyfill window.external.notify");
