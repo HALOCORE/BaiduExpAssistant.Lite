@@ -13,6 +13,12 @@ let RNStyles = {
     padding: "5px 15px",
     marginTop: "6px"
   },
+  bigSettingButton: {
+    fontSize: 14,
+    padding: "5px 15px",
+    marginTop: "6px",
+    marginRight: "12px"
+  },
   uploadEnabled: {
     fontSize: 14,
     padding: "5px 15px",
@@ -68,6 +74,11 @@ let RNStyles = {
     margin: 5,
     marginBottom: 15,
     border: "2px solid gray"
+  },
+  keyword: {
+    color: "orange",
+    fontWeight: 900,
+    padding: "0px 5px"
   }
 };
 
@@ -124,7 +135,7 @@ function saveCanvasPhrase22() {
     console.log("# saveCanvasPhrase22 called.");
     window.external.getUploadPic(dataUrl => {
       console.log("# external.getUploadPic response with dataUrl.");
-      let fakeFile = window.dataURLtoFakeFile(dataUrl, "brief.png");
+      let fakeFile = window.dataURLtoFile(dataUrl, "brief.png");
 
       window._onUploadFileChange({
         type: "change",
@@ -155,15 +166,12 @@ function saveCanvasPhrase3() {
 
 function TryLoadSettings() {
   try {
-    if (CommonSetData) {
-      var settings = CommonSetData["bigpics"];
-
-      if (settings) {
-        if (settings['brief-background-first-checked']) RNState['useBigPic'][1](settings['brief-background-first-checked']);
-        if (settings['brief-background-text']) RNState['backgroundUrls'][1](settings['brief-background-text']);
-        if (settings['brief-icon-text']) RNState['iconUrls'][1](settings['brief-icon-text']);
-      }
-    }
+    if (!CommonSetData) CommonSetData = {};
+    if (!CommonSetData["bigpics"]) CommonSetData["bigpics"] = {};
+    let settings = CommonSetData["bigpics"];
+    if (settings['brief-background-first-checked']) RNState['useBigPic'][1](settings['brief-background-first-checked']);
+    if (settings['brief-background-text']) RNState['backgroundUrls'][1](settings['brief-background-text']);
+    if (settings['brief-icon-text']) RNState['iconUrls'][1](settings['brief-icon-text']);
   } catch (e) {
     try {
       window.external.notify("ERROR: 简介图设置恢复不成功.");
@@ -171,22 +179,30 @@ function TryLoadSettings() {
   }
 }
 
+function isSettingsDirty() {
+  let settings = CommonSetData["bigpics"];
+  if (settings['brief-background-first-checked'] !== RNState['useBigPic'][0]) return true;
+  if (settings['brief-background-text'] !== RNState['backgroundUrls'][0]) return true;
+  if (settings['brief-icon-text'] !== RNState['iconUrls'][0]) return true;
+  return false;
+}
+
 function saveConfig() {
-  var saveObj = {};
   var isChecked = RNState['useBigPic'][0];
   var backgroundText = RNState['backgroundUrls'][0];
   var iconText = RNState['iconUrls'][0];
-  saveObj['brief-background-first-checked'] = isChecked;
-  saveObj['brief-background-text'] = backgroundText;
-  saveObj['brief-icon-text'] = iconText;
-  saveObj['group-id'] = "bigpics";
-  var dataStr = JSON.stringify(saveObj);
+  let settings = CommonSetData["bigpics"];
+  settings['brief-background-first-checked'] = isChecked;
+  settings['brief-background-text'] = backgroundText;
+  settings['brief-icon-text'] = iconText;
+  settings['group-id'] = "bigpics";
+  var dataStr = JSON.stringify(settings);
 
   try {
     console.log("# saveConfig: " + dataStr);
     window.external.notify("SET-DATA: " + dataStr);
   } catch (e) {
-    alert(dataStr);
+    console.error(" saveConfig failed: " + dataStr);
   }
 }
 
@@ -277,15 +293,23 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
 }
 
 function RN_BriefCurrentUrlsZone() {
+  RNState['backgroundKey'] = React.useState("<无匹配>");
+  let backgroundKey = RNState['backgroundKey'][0];
+  RNState['iconKey'] = React.useState("<无匹配>");
+  let iconKey = RNState['iconKey'][0];
   RNState['backgroundSrc'] = React.useState("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=4061924083,1937802988&fm=26&gp=0.jpg");
   let backgroundSrc = RNState['backgroundSrc'][0];
   RNState['iconSrc'] = React.useState("https://www.easyicon.net/api/resizeApi.php?id=1236657&size=128");
   let iconSrc = RNState['iconSrc'][0];
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
     style: RNStyles.currentUrlStatus
-  }, "\u80CC\u666F\u56FE: ", backgroundSrc), /*#__PURE__*/React.createElement("p", {
+  }, "\u80CC\u666F\u56FE: ", /*#__PURE__*/React.createElement("span", {
+    style: RNStyles.keyword
+  }, backgroundKey), " ", backgroundSrc), /*#__PURE__*/React.createElement("p", {
     style: RNStyles.currentUrlStatus
-  }, "\u56FE\u6807: ", iconSrc));
+  }, "\u56FE\u6807: ", /*#__PURE__*/React.createElement("span", {
+    style: RNStyles.keyword
+  }, iconKey), " ", iconSrc));
 }
 
 function RN_BriefControlZone(props) {
@@ -295,11 +319,11 @@ function RN_BriefControlZone(props) {
   } = props;
   const [isAutoWrap, setIsAutoWrap] = RNState['isAutoWrap'] = React.useState(true);
   const [isUploaderHacked] = RNState['isUploaderHacked'] = React.useState(false);
+  const [isConfigDirty] = RNState['isConfigDirty'] = React.useState(false);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-    id: "toggle-settings",
     onClick: () => setSettingsVisible(!settingsVisible),
-    style: RNStyles.bigButton
-  }, settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.bigSettingButton
+  }, isConfigDirty ? '💾' : '✅', " ", settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
     onClick: () => saveCanvas(0),
     style: RNStyles.bigButton
   }, "\u4FDD\u5B58\u7B80\u4ECB\u56FE"), /*#__PURE__*/React.createElement("button", {
@@ -316,7 +340,7 @@ function RN_BriefControlZone(props) {
     style: {
       marginLeft: 15
     }
-  }), "\u81EA\u52A8\u6362\u884C");
+  }), "\u6807\u9898\u81EA\u52A8\u6298\u884C");
 }
 
 function RN_BriefPicEditor() {
@@ -419,6 +443,8 @@ function AddBriefImgEditor() {
     for (let p of pairs) {
       if (titleInput.value.toLowerCase().indexOf(p[0].toLowerCase()) >= 0) {
         RNState['iconSrc'][1](p[1]);
+        let key = p[0] === "" ? "<无匹配>" : p[0];
+        RNState['iconKey'][1](key);
         break;
       }
     } //update brief background
@@ -443,6 +469,7 @@ function AddBriefImgEditor() {
 
     if (RNState['useBigPic'][0]) {
       let myimg = document.getElementById("my-bigimg");
+      RNState['backgroundKey'][1]("<大图片框>");
 
       if (myimg && myimg.src) {
         RNState['backgroundSrc'][1](myimg.src);
@@ -452,12 +479,16 @@ function AddBriefImgEditor() {
     } else {
       for (let p of pairs) {
         if (titleInput.value.toLowerCase().indexOf(p[0].toLowerCase()) >= 0) {
+          let key = p[0] === "" ? "<无匹配>" : p[0];
+          RNState['backgroundKey'][1](key);
           RNState['backgroundSrc'][1](p[1]);
           break;
         }
       }
-    } //check canvas update.
+    } //update is settings dirty
 
+
+    RNState['isConfigDirty'][1](isSettingsDirty()); //check canvas update.
 
     let isBksrc1Checked = RNState['useBigPic'][0];
     let wrapLineEnabled = RNState['isAutoWrap'][0];
@@ -511,7 +542,7 @@ function drawCanvas(titleInput) {
   } //画一个实心矩形
 
 
-  fillRoundRect(ctx, 66, 66, 468, 108, 12, "white"); //TODO
+  fillRoundRect(ctx, 66, 66, 468, 108, 12, "rgba(255,255,255,0.9)"); //TODO
 
   apple = document.getElementById("brief-iconImage");
 
@@ -613,6 +644,19 @@ function drawRoundRectPath(cxt, width, height, radius) {
     setTimeout(TryLoadSettings, 100); //no reason yet.
 
     window.external.notify("NOTIFY: 添加成功 | 大图片框和简介图已载入 | OK");
+    document.getElementById("submit").addEventListener("mouseenter", () => {
+      let isDirty = isSettingsDirty();
+      isSavedOrCanceled = true;
+
+      if (isDirty === true && !isSavedOrCanceled) {
+        window.external.cofirmDialog("保存提醒: 是否保存简介图设置? ", "简介图设置本次已修改，但是还没有保存。", () => {
+          console.log("# confirmDialog callback: prepare to saveConfig.");
+          saveConfig();
+        });
+      }
+    }, () => {
+      isSavedOrCanceled = true;
+    });
   } catch (e) {
     var emm = document.createElement("div");
     emm.innerText = e.message;

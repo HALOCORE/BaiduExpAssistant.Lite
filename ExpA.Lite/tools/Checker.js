@@ -81,3 +81,4 @@ console.log("========== Checker.js ==========");
         }
     })();
 })();
+console.log("^^^^^^^^^^ Checker.js ^^^^^^^^^^");

@@ -121,3 +121,4 @@ setTimeout(function () {
         // }
     })();
 }, 1000);
+console.log("^^^^^^^^^^ PicInsert.js ^^^^^^^^^^");

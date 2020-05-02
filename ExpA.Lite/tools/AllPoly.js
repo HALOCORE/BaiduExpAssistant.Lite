@@ -1,15 +1,46 @@
 console.log("========== AllPoly.js ==========");
-window._EXTENSION_IS_CHROME_ = false;
+window._EXPLITE_EXTENSION_ENV_ = null;
 try {
     window.external.notify("TEST_NOTIFY");
     console.log("百度经验个人助手环境");
+    window._EXPLITE_EXTENSION_ENV_ = "assistant";
+} catch(e) {
+    console.log("浏览器环境");
+    window._EXPLITE_EXTENSION_ENV_ = "browser";
+}
 
-    console.logerr = (err) => {
-        var hiddenErrB = document.createElement('div');
-        hiddenErrB.innerText = err.message;
-        console.error("# LOGERR:" + hiddenErrB.innerText);
-    }
+////// both
+console.logerr = (err) => {
+    var hiddenErrB = document.createElement('div');
+    hiddenErrB.innerText = err.message;
+    console.error("# LOGERR:" + hiddenErrB.innerText);
+}
 
+console.log("# hacking pic uploader...");
+let criticalElem = document.getElementsByClassName("webuploader-element-invisible")[0];
+function cloneNodeGen(clone) {
+    return function() {
+        var ret = clone.apply(this, arguments);
+        console.log("# clone: " + ret.tagName.toLowerCase());
+        ret.cloneNode = cloneNodeGen(ret.cloneNode);
+        ret.addEventListener = function(adder) {
+            return function() {
+                var ret = adder.apply(this, arguments);
+                console.log("# addEventListener.", arguments);
+                if(arguments[0] === "change") {
+                    console.log("# change EventListener found.", arguments[1]);
+                    window._onUploadFileChange = arguments[1];
+                }
+                return ret;
+            }
+        }(ret.addEventListener);
+        return ret;
+    };
+}
+criticalElem.cloneNode = cloneNodeGen(criticalElem.cloneNode);
+
+////// assistant only
+if(window._EXPLITE_EXTENSION_ENV_ === "assistant") {
     window.external._getImageDict = {};
     window.external.getImage = (url, onSucceed, onFailed) => {
         url = url.trim();
@@ -35,40 +66,17 @@ try {
         } catch(e) { console.error(e); }
     }
 
-    window.external_getUploadPicSucceed = () => {console.warn("# external_getUploadPicSucceed empty call.")};
-    window.external_getUploadPicFailed = (message) => {console.error("# external_getUploadPicFailed: " + message)};;
+    window.external_getUploadPicSucceed = null;
+    window.external_getUploadPicFailed = null;
     window.external.getUploadPic = (onSucceed, onFailed) => {
         console.log("# external.getUploadPic called.");
         window.external.notify("GET-PIC-FOR-UPLOAD: " + 600 / 240 + " | 600 | 240");
         window.external_getUploadPicSucceed = onSucceed;
         if(onFailed) window.external_getUploadPicFailed = onFailed;
+        else window.external_getUploadPicFailed = (message) => {console.error("# external_getUploadPicFailed: " + message)};
     }
 
-    //hacking pic uploader.
-    console.log("# hacking pic uploader...");
-    let criticalElem = document.getElementsByClassName("webuploader-element-invisible")[0];
-    function cloneNodeGen(clone) {
-        return function() {
-            var ret = clone.apply(this, arguments);
-            console.log("# clone: " + ret.tagName.toLowerCase());
-            ret.cloneNode = cloneNodeGen(ret.cloneNode);
-            ret.addEventListener = function(adder) {
-                return function() {
-                    var ret = adder.apply(this, arguments);
-                    console.log("# addEventListener.", arguments);
-                    if(arguments[0] === "change") {
-                        console.log("# change EventListener found.", arguments[1]);
-                        window._onUploadFileChange = arguments[1];
-                    }
-                    return ret;
-                }
-            }(ret.addEventListener);
-            return ret;
-        };
-    }
-    criticalElem.cloneNode = cloneNodeGen(criticalElem.cloneNode);
-
-    window.dataURLtoFakeFile = (dataurl, filename) => {
+    window.dataURLtoFile = (dataurl, filename) => {
         var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
         while(n--){
@@ -80,15 +88,25 @@ try {
         return file;
     };
     //window._onUploadFileChange({type:"change", target:{"files": [fakeFile]}})
-} catch (e) {
-    console.log("浏览器环境");
-    window._EXTENSION_IS_CHROME_ = true;
-    console.log(">>> Pollyfill window.external.notify");
+
+    window.external_confirmCallbackYes = null;
+    window.external_confirmCallbackNo = null;
+    window.external.cofirmDialog = (title, body, callbackYes, callbackNo) => {
+        console.log("# window.external.cofirmDialog called.");
+        window.external_confirmCallbackYes = callbackYes;
+        if(callbackNo) window.external_confirmCallbackNo = callbackNo;
+        else window.external_confirmCallbackNo = () => console.warn("# external_confirmCallbackNo.");
+        window.external.notify("CONFIRM: " + title + " | " + body);
+    }
+} 
+
+////// browser only
+if(window._EXPLITE_EXTENSION_ENV_ === "browser") {
     window.external.notify = function (msg) {
         console.log("[window.external.notify]", msg);
     }
 
-    function dataURLtoFile(dataurl, filename) {
+    window.dataURLtoFile = (dataurl, filename) => {
         var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
         while(n--){
