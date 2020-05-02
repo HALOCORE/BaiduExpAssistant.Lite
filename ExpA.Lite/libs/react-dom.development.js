@@ -8,7 +8,8 @@
  */
 
 'use strict';
-
+console.log("# @@@@@@@@@@ react-dom.development.js @@@@@@@@@@");
+console.log("# React status:", React);
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react')) :
   typeof define === 'function' && define.amd ? define(['exports', 'react'], factory) :
@@ -25145,3 +25146,5 @@
   exports.version = ReactVersion;
 
 })));
+console.log("# ReactDOM status:", ReactDOM);
+console.log("# ^^^^^^^^^^ react-dom.development.js ^^^^^^^^^^");
