@@ -38,6 +38,7 @@ function cloneNodeGen(clone) {
     };
 }
 criticalElem.cloneNode = cloneNodeGen(criticalElem.cloneNode);
+criticalElem.dispatchEvent(new CustomEvent("change"));
 
 ////// assistant only
 if(window._EXPLITE_EXTENSION_ENV_ === "assistant") {

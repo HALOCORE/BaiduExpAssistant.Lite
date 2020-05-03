@@ -59,8 +59,8 @@ let RNStyles = {
     whiteSpace: "nowrap"
   },
   saveConfigButton: {
-    fontSize: 16,
-    padding: "5px 25px",
+    fontSize: 14,
+    padding: "5px 10px",
     marginTop: 6
   },
   hiddenImg: {
@@ -277,11 +277,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     style: RNStyles.urlsTextArea,
     value: iconUrls,
     onChange: e => setIconUrls(e.target.value)
-  })), /*#__PURE__*/React.createElement("p", null, "\u6CE8\u610F\u4E8B\u9879\uFF1A\u56FE\u7247\u56FE\u6807\u5728\u6D4F\u89C8\u5668\u67E5\u627E\uFF0C\u6D4F\u89C8\u5668\u4E2D\u53F3\u952E\u56FE\u7247\uFF0C\u53EF\u4EE5\u590D\u5236\u56FE\u7247\u5730\u5740\u3002", /*#__PURE__*/React.createElement("br", null), "\u5982\u679C\u5E0C\u671B\u8BBE\u7F6E\u53EF\u4EE5\u4FDD\u5B58\u53EF\u4EE5\u4FDD\u7559\u5230\u4E0B\u6B21\u4F7F\u7528\uFF0C\u70B9\u51FB\u4FDD\u5B58\u914D\u7F6E\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u751F\u6210\u7B80\u4ECB\u56FE\u540E\uFF0C\u5E76\u4E0D\u4F1A\u81EA\u52A8\u4E0A\u4F20\uFF0C\u8BF7\u70B9\u51FB\u53E6\u5B58\u4E3A\uFF0C\u6216\u8005\u4FDD\u5B58\u56FE\u7247\uFF0C\u518D\u4E0A\u4F20\u3002")), /*#__PURE__*/React.createElement("button", {
-    id: "brief-conf-save",
-    onClick: saveConfig,
-    style: RNStyles.saveConfigButton
-  }, "\u4FDD\u5B58\u914D\u7F6E"), /*#__PURE__*/React.createElement("img", {
+  })), /*#__PURE__*/React.createElement("p", null, "\u6CE8\u610F\u4E8B\u9879\uFF1A\u56FE\u7247\u56FE\u6807\u5728\u6D4F\u89C8\u5668\u67E5\u627E\uFF0C\u6D4F\u89C8\u5668\u4E2D\u53F3\u952E\u56FE\u7247\uFF0C\u53EF\u4EE5\u590D\u5236\u56FE\u7247\u5730\u5740\u3002", /*#__PURE__*/React.createElement("br", null), "\u4FEE\u6539\u914D\u7F6E\u540E\uFF0C\u53EF\u4EE5\u70B9\u51FB\u201C\u6536\u8D77\u8BBE\u7F6E\u201D\u6309\u94AE\u5DE6\u4FA7\u7684\u4FDD\u5B58\u6309\u94AE\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u751F\u6210\u7B80\u4ECB\u56FE\u540E\uFF0C\u53EF\u4EE5\u70B9\u51FB\u4E00\u952E\u4E0A\u4F20\uFF0C\u4E5F\u53EF\u4EE5\u53E6\u5B58\u4E3A\u56FE\u7247\u3002")), /*#__PURE__*/React.createElement("img", {
     className: "brief-img",
     style: RNStyles.hiddenImg,
     id: "brief-backgroundImage"
@@ -321,9 +317,13 @@ function RN_BriefControlZone(props) {
   const [isUploaderHacked] = RNState['isUploaderHacked'] = React.useState(false);
   const [isConfigDirty] = RNState['isConfigDirty'] = React.useState(false);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    onClick: saveConfig,
+    style: RNStyles.saveConfigButton,
+    disabled: !isConfigDirty
+  }, isConfigDirty ? '💾' : '✅'), /*#__PURE__*/React.createElement("button", {
     onClick: () => setSettingsVisible(!settingsVisible),
     style: RNStyles.bigSettingButton
-  }, isConfigDirty ? '💾' : '✅', " ", settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
+  }, settingsVisible ? "↑ 收起设置 ↑" : "↓ 展开设置 ↓", " "), /*#__PURE__*/React.createElement("button", {
     onClick: () => saveCanvas(0),
     style: RNStyles.bigButton
   }, "\u4FDD\u5B58\u7B80\u4ECB\u56FE"), /*#__PURE__*/React.createElement("button", {
@@ -333,7 +333,7 @@ function RN_BriefControlZone(props) {
     disabled: !isUploaderHacked,
     style: isUploaderHacked ? RNStyles.uploadEnabled : RNStyles.uploadDisabled,
     onClick: () => saveCanvas(2)
-  }, isUploaderHacked ? '>>> 一键上传 >>>' : '请先上传步骤图片', " "), /*#__PURE__*/React.createElement("input", {
+  }, isUploaderHacked ? '>>> 一键上传 >>>' : '等待执行入口...', " "), /*#__PURE__*/React.createElement("input", {
     checked: isAutoWrap,
     onChange: () => setIsAutoWrap(!isAutoWrap),
     type: "checkbox",
@@ -644,18 +644,18 @@ function drawRoundRectPath(cxt, width, height, radius) {
     setTimeout(TryLoadSettings, 100); //no reason yet.
 
     window.external.notify("NOTIFY: 添加成功 | 大图片框和简介图已载入 | OK");
+    let isSaveConfigCanceled = false;
     document.getElementById("submit").addEventListener("mouseenter", () => {
       let isDirty = isSettingsDirty();
-      isSavedOrCanceled = true;
 
-      if (isDirty === true && !isSavedOrCanceled) {
+      if (isDirty === true && !isSaveConfigCanceled) {
         window.external.cofirmDialog("保存提醒: 是否保存简介图设置? ", "简介图设置本次已修改，但是还没有保存。", () => {
           console.log("# confirmDialog callback: prepare to saveConfig.");
           saveConfig();
+        }, () => {
+          isSaveConfigCanceled = true;
         });
       }
-    }, () => {
-      isSavedOrCanceled = true;
     });
   } catch (e) {
     var emm = document.createElement("div");
