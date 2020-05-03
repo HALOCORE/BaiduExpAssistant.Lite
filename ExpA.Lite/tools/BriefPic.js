@@ -67,7 +67,7 @@ let RNStyles = {
     display: "none"
   },
   currentUrlStatus: {
-    fontSize: 12
+    fontSize: 10
   },
   configGroup: {
     padding: 10,
@@ -79,6 +79,20 @@ let RNStyles = {
     color: "orange",
     fontWeight: 900,
     padding: "0px 5px"
+  },
+  candidatesBar: {
+    margin: 0,
+    padding: 2,
+    fontSize: 15
+  },
+  candidateItem: {
+    display: "inline-block",
+    borderRadius: 4,
+    background: "black",
+    color: "white",
+    padding: "2px 4px",
+    margin: "2px 4px",
+    fontSize: 12
   }
 };
 
@@ -289,6 +303,10 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
 }
 
 function RN_BriefCurrentUrlsZone() {
+  RNState['backgroundCandidates'] = React.useState([]);
+  let backgroundCandidates = RNState['backgroundCandidates'][0];
+  RNState['iconCandidates'] = React.useState([]);
+  let iconCandidates = RNState['iconCandidates'][0];
   RNState['backgroundKey'] = React.useState("<无匹配>");
   let backgroundKey = RNState['backgroundKey'][0];
   RNState['iconKey'] = React.useState("<无匹配>");
@@ -297,15 +315,64 @@ function RN_BriefCurrentUrlsZone() {
   let backgroundSrc = RNState['backgroundSrc'][0];
   RNState['iconSrc'] = React.useState("https://www.easyicon.net/api/resizeApi.php?id=1236657&size=128");
   let iconSrc = RNState['iconSrc'][0];
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+
+  function setBackgroundCandidate(candidate) {
+    RNState['backgroundKey'][1](candidate[0]);
+    RNState['backgroundSrc'][1](candidate[1]);
+  }
+
+  function setIconCandidate(candidate) {
+    RNState['iconKey'][1](candidate[0]);
+    RNState['iconSrc'][1](candidate[1]);
+  }
+
+  return /*#__PURE__*/React.createElement("div", null, backgroundCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: RNStyles.candidatesBar,
+    onChange: e => console.log(e)
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      paddingRight: 5
+    }
+  }, "\u53EF\u9009\u80CC\u666F\u56FE: "), backgroundCandidates.map(candidate => /*#__PURE__*/React.createElement("div", {
+    style: RNStyles.candidateItem,
+    key: candidate[1]
+  }, /*#__PURE__*/React.createElement("label", null, /*#__PURE__*/React.createElement("input", {
+    type: "radio",
+    name: "background-candidate",
+    style: {
+      paddingRight: 2
+    },
+    onClick: () => setBackgroundCandidate(candidate),
+    readOnly: true,
+    checked: backgroundSrc === candidate[1]
+  }), candidate[0] === "" ? "<无关键词>" : candidate[0])))) : /*#__PURE__*/React.createElement(React.Fragment, null), iconCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: RNStyles.candidatesBar,
+    onChange: e => console.log(e)
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      paddingRight: 5
+    }
+  }, "\u53EF\u9009\u56FE\u6807: "), iconCandidates.map(candidate => /*#__PURE__*/React.createElement("div", {
+    style: RNStyles.candidateItem,
+    key: candidate[1]
+  }, /*#__PURE__*/React.createElement("label", null, /*#__PURE__*/React.createElement("input", {
+    type: "radio",
+    name: "icon-candidate",
+    style: {
+      paddingRight: 2
+    },
+    onClick: () => setIconCandidate(candidate),
+    readOnly: true,
+    checked: iconSrc === candidate[1]
+  }), candidate[0] === "" ? "<无关键词>" : candidate[0])))) : /*#__PURE__*/React.createElement(React.Fragment, null), /*#__PURE__*/React.createElement("p", {
     style: RNStyles.currentUrlStatus
-  }, "\u80CC\u666F\u56FE: ", /*#__PURE__*/React.createElement("span", {
+  }, "\u9009\u4E2D\u80CC\u666F\u56FE: ", /*#__PURE__*/React.createElement("span", {
     style: RNStyles.keyword
-  }, backgroundKey), " ", backgroundSrc), /*#__PURE__*/React.createElement("p", {
+  }, backgroundKey === "" ? "<无关键词>" : backgroundKey), " ", backgroundSrc), /*#__PURE__*/React.createElement("p", {
     style: RNStyles.currentUrlStatus
-  }, "\u56FE\u6807: ", /*#__PURE__*/React.createElement("span", {
+  }, "\u9009\u4E2D\u56FE\u6807: ", /*#__PURE__*/React.createElement("span", {
     style: RNStyles.keyword
-  }, iconKey), " ", iconSrc));
+  }, iconKey === "" ? "<无关键词>" : iconKey), " ", iconSrc));
 }
 
 function RN_BriefControlZone(props) {
@@ -388,7 +455,7 @@ function AddBriefImgEditor() {
 
   function backgroundShowNote(note, color) {
     if (!note) {
-      note = "最终背景图为从上往下找到的第一个关键词匹配。";
+      note = "可选背景图为从上往下找到的前n个关键词匹配。";
       color = "darkcyan";
     }
 
@@ -399,7 +466,7 @@ function AddBriefImgEditor() {
 
   function iconShowNote(note, color) {
     if (!note) {
-      note = "最终图标为从上往下找到的第一个关键词匹配。";
+      note = "可选图标为从上往下找到的前n个关键词匹配。";
       color = "darkcyan";
     }
 
@@ -438,15 +505,24 @@ function AddBriefImgEditor() {
       iconShowNote();
     } catch (e) {
       iconShowNote("输入格式不正确!", "red");
-    }
+    } //update ICON candidates and key src.
+
+
+    let iconCandidates = [];
+    let isIconCandidateValid = false;
 
     for (let p of pairs) {
       if (titleInput.value.toLowerCase().indexOf(p[0].toLowerCase()) >= 0) {
-        RNState['iconSrc'][1](p[1]);
-        let key = p[0] === "" ? "<无匹配>" : p[0];
-        RNState['iconKey'][1](key);
-        break;
+        iconCandidates.push(p);
+        if (RNState['iconKey'][0] === p[0]) isIconCandidateValid = true;
       }
+    }
+
+    RNState['iconCandidates'][1](iconCandidates);
+
+    if (!isIconCandidateValid && iconCandidates.length > 0) {
+      RNState['iconKey'][1](iconCandidates[0][0]);
+      RNState['iconSrc'][1](iconCandidates[0][1]);
     } //update brief background
 
 
@@ -465,10 +541,12 @@ function AddBriefImgEditor() {
       backgroundShowNote();
     } catch (e) {
       backgroundShowNote("输入格式不正确!", "red");
-    }
+    } //update BACKGROUND candidates and key src
+
 
     if (RNState['useBigPic'][0]) {
       let myimg = document.getElementById("my-bigimg");
+      RNState['backgroundCandidates'][1]([]);
       RNState['backgroundKey'][1]("<大图片框>");
 
       if (myimg && myimg.src) {
@@ -477,13 +555,21 @@ function AddBriefImgEditor() {
         RNState['backgroundSrc'][1]("大图片框图片不存在");
       }
     } else {
+      let backgroundCandidates = [];
+      let isBackgroundValid = false;
+
       for (let p of pairs) {
         if (titleInput.value.toLowerCase().indexOf(p[0].toLowerCase()) >= 0) {
-          let key = p[0] === "" ? "<无匹配>" : p[0];
-          RNState['backgroundKey'][1](key);
-          RNState['backgroundSrc'][1](p[1]);
-          break;
+          backgroundCandidates.push(p);
+          if (p[0] === RNState['backgroundKey'][0]) isBackgroundValid = true;
         }
+      }
+
+      RNState['backgroundCandidates'][1](backgroundCandidates);
+
+      if (!isBackgroundValid && backgroundCandidates.length > 0) {
+        RNState['backgroundKey'][1](backgroundCandidates[0][0]);
+        RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
       }
     } //update is settings dirty
 
