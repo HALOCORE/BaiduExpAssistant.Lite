@@ -361,14 +361,13 @@ function RN_BriefCurrentUrlsZone() {
     },
     onClick: () => setBackgroundCandidate(candidate),
     readOnly: true,
-    checked: backgroundSrc === candidate[1]
+    checked: backgroundKey === candidate[0] && backgroundSrc === candidate[1]
   }), candidate[0] === "" ? "<无关键词>" : candidate[0]))), backgroundCandidates.length === 1 ? /*#__PURE__*/React.createElement("span", {
     style: {
       color: "gray"
     }
   }, "\u589E\u52A0\u66F4\u591A\u9009\u9879\u8BF7\u201C\u5C55\u5F00\u8BBE\u7F6E\u201D") : /*#__PURE__*/React.createElement(React.Fragment, null)) : /*#__PURE__*/React.createElement(React.Fragment, null), iconCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    style: RNStyles.candidatesBar,
-    onChange: e => console.log(e)
+    style: RNStyles.candidatesBar
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       paddingRight: 5
@@ -384,7 +383,7 @@ function RN_BriefCurrentUrlsZone() {
     },
     onClick: () => setIconCandidate(candidate),
     readOnly: true,
-    checked: iconSrc === candidate[1]
+    checked: iconKey === candidate[0] && iconSrc === candidate[1]
   }), candidate[0] === "" ? "<无关键词>" : candidate[0]))), iconCandidates.length === 1 ? /*#__PURE__*/React.createElement("span", {
     style: {
       color: "gray"

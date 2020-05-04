@@ -324,7 +324,7 @@ function RN_BriefCurrentUrlsZone() {
                 <div style={RNStyles.candidateItem} key={candidate[1]}>
                   <label>
                     <input type="radio" name="background-candidate" style={{ paddingRight: 2 }}
-                      onClick={() => setBackgroundCandidate(candidate)} readOnly checked={backgroundSrc === candidate[1]} />
+                      onClick={() => setBackgroundCandidate(candidate)} readOnly checked={backgroundKey === candidate[0] && backgroundSrc === candidate[1]} />
                     {candidate[0] === "" ? "<无关键词>" : candidate[0]}
                   </label>
                 </div>
@@ -335,14 +335,14 @@ function RN_BriefCurrentUrlsZone() {
       }
       {
         iconCandidates.length > 0 ?
-          <div style={RNStyles.candidatesBar} onChange={(e) => console.log(e)}>
+          <div style={RNStyles.candidatesBar}>
             <span style={{ paddingRight: 5 }}>可选图标: </span>
             {
               iconCandidates.map((candidate) => (
                 <div style={RNStyles.candidateItem} key={candidate[1]}>
                   <label>
                     <input type="radio" name="icon-candidate" style={{ paddingRight: 2 }}
-                      onClick={() => setIconCandidate(candidate)} readOnly checked={iconSrc === candidate[1]} />
+                      onClick={() => setIconCandidate(candidate)} readOnly checked={iconKey === candidate[0] && iconSrc === candidate[1]} />
                     {candidate[0] === "" ? "<无关键词>" : candidate[0]}
                   </label>
                 </div>
