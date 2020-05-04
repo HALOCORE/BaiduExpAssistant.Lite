@@ -220,10 +220,22 @@ function saveConfig() {
   }
 }
 
+function compareCandidateList(list1, list2) {
+  if (list1.length !== list2.length) return false;
+
+  for (let i = 0; i < list1.length; i++) {
+    if (list1[i][0] !== list2[i][0]) return false;
+    if (list1[i][1] !== list2[i][1]) return false;
+  }
+
+  return true;
+}
+
 function RN_BriefPicSettingZone() {
-  RNState['iconNote'] = React.useState(["最终图标为从上往下找到的第一个关键词匹配。", "darkcyan"]);
+  console.log("# RN_BriefPicSettingZone render.");
+  RNState['iconNote'] = React.useState(["可选图标为从上往下找到的前n个关键词匹配。", "darkcyan"]);
   let iconNote = RNState['iconNote'][0];
-  RNState['backgroundNote'] = React.useState(["最终背景图为从上往下找到的第一个关键词匹配。", "darkcyan"]);
+  RNState['backgroundNote'] = React.useState(["可选背景图为从上往下找到的前n个关键词匹配。", "darkcyan"]);
   let backgroundNote = RNState['backgroundNote'][0];
   RNState['useBigPic'] = React.useState(false);
   let [useBigPic, setUseBigPic] = RNState['useBigPic'];
@@ -232,6 +244,7 @@ win = http://image.tianjimedia.com/uploadImages/2016/097/17/U7SP0XU4SSRD_windows
 word = https://cn.bing.com/th?id=OIP.2l4mI6F0_MiyyGcPB-aoYAHaEK&pid=Api&rs=1
 chrome = http://img.mp.sohu.com/upload/20170526/ee6776da5af84cec81f68e3fce9274aa_th.png
 
+= https://cn.bing.com/th?id=OIP.CmLXtzTWO-gE66W3YfzuSQHaE0&pid=Api&rs=1
 = http://b.hiphotos.baidu.com/image/pic/item/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg`);
   let [backgroundUrls, setBackgroundUrls] = RNState['backgroundUrls'];
   RNState['iconUrls'] = React.useState(`word = https://www.easyicon.net/api/resizeApi.php?id=1212930&size=128
@@ -249,7 +262,11 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     style: {
       paddingRight: 20
     }
-  }, "\u6700\u540E\u4E00\u884C\u8F93\u5165\u683C\u5F0F(\u8868\u793A\u9ED8\u8BA4\u56FE\u6807\u6216\u56FE\u7247):"), " ", /*#__PURE__*/React.createElement("b", null, "=\u56FE\u7247\u94FE\u63A5"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u5339\u914D\u4EFB\u610F\u6807\u9898\u8F93\u5165\u683C\u5F0F:"), " ", /*#__PURE__*/React.createElement("b", null, "=\u56FE\u7247\u94FE\u63A5")), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      paddingRight: 20
+    }
+  }, "\u5173\u952E\u8BCD\u53EF\u91CD\u590D, \u591A\u4E2A\u9009\u9879\u90FD\u4F1A\u51FA\u73B0. "))), /*#__PURE__*/React.createElement("div", {
     style: RNStyles.configGroup
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\u80CC\u666F\u56FE\uFF1A"), /*#__PURE__*/React.createElement("button", {
     onClick: () => launchUrl('https://image.baidu.com/')
@@ -291,7 +308,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     style: RNStyles.urlsTextArea,
     value: iconUrls,
     onChange: e => setIconUrls(e.target.value)
-  })), /*#__PURE__*/React.createElement("p", null, "\u6CE8\u610F\u4E8B\u9879\uFF1A\u56FE\u7247\u56FE\u6807\u5728\u6D4F\u89C8\u5668\u67E5\u627E\uFF0C\u6D4F\u89C8\u5668\u4E2D\u53F3\u952E\u56FE\u7247\uFF0C\u53EF\u4EE5\u590D\u5236\u56FE\u7247\u5730\u5740\u3002", /*#__PURE__*/React.createElement("br", null), "\u4FEE\u6539\u914D\u7F6E\u540E\uFF0C\u53EF\u4EE5\u70B9\u51FB\u201C\u6536\u8D77\u8BBE\u7F6E\u201D\u6309\u94AE\u5DE6\u4FA7\u7684\u4FDD\u5B58\u6309\u94AE\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u751F\u6210\u7B80\u4ECB\u56FE\u540E\uFF0C\u53EF\u4EE5\u70B9\u51FB\u4E00\u952E\u4E0A\u4F20\uFF0C\u4E5F\u53EF\u4EE5\u53E6\u5B58\u4E3A\u56FE\u7247\u3002")), /*#__PURE__*/React.createElement("img", {
+  })), /*#__PURE__*/React.createElement("p", null, "\u6CE8\u610F\u4E8B\u9879\uFF1A\u56FE\u7247\u56FE\u6807\u5728\u6D4F\u89C8\u5668\u67E5\u627E\uFF0C\u6D4F\u89C8\u5668\u4E2D\u53F3\u952E\u56FE\u7247\uFF0C\u53EF\u4EE5\u590D\u5236\u56FE\u7247\u5730\u5740\u3002", /*#__PURE__*/React.createElement("br", null), "\u4FEE\u6539\u914D\u7F6E\u540E\uFF0C\u201C\u6536\u8D77\u8BBE\u7F6E\u201D\u6309\u94AE\u5DE6\u4FA7\u53EF\u4EE5\u70B9\u51FB\u4FDD\u5B58\u3002", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("b", null, "\u751F\u6210\u7B80\u4ECB\u56FE\u540E\uFF0C\u53EF\u4EE5\u4E00\u952E\u4E0A\u4F20\uFF0C\u4E5F\u53EF\u4EE5\u53E6\u5B58\u4E3A\u56FE\u7247\u3002")), /*#__PURE__*/React.createElement("img", {
     className: "brief-img",
     style: RNStyles.hiddenImg,
     id: "brief-backgroundImage"
@@ -303,6 +320,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
 }
 
 function RN_BriefCurrentUrlsZone() {
+  console.log("# RN_BriefCurrentUrlsZone render.");
   RNState['backgroundCandidates'] = React.useState([]);
   let backgroundCandidates = RNState['backgroundCandidates'][0];
   RNState['iconCandidates'] = React.useState([]);
@@ -327,8 +345,7 @@ function RN_BriefCurrentUrlsZone() {
   }
 
   return /*#__PURE__*/React.createElement("div", null, backgroundCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    style: RNStyles.candidatesBar,
-    onChange: e => console.log(e)
+    style: RNStyles.candidatesBar
   }, /*#__PURE__*/React.createElement("span", {
     style: {
       paddingRight: 5
@@ -345,7 +362,11 @@ function RN_BriefCurrentUrlsZone() {
     onClick: () => setBackgroundCandidate(candidate),
     readOnly: true,
     checked: backgroundSrc === candidate[1]
-  }), candidate[0] === "" ? "<无关键词>" : candidate[0])))) : /*#__PURE__*/React.createElement(React.Fragment, null), iconCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
+  }), candidate[0] === "" ? "<无关键词>" : candidate[0]))), backgroundCandidates.length === 1 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "gray"
+    }
+  }, "\u589E\u52A0\u66F4\u591A\u9009\u9879\u8BF7\u201C\u5C55\u5F00\u8BBE\u7F6E\u201D") : /*#__PURE__*/React.createElement(React.Fragment, null)) : /*#__PURE__*/React.createElement(React.Fragment, null), iconCandidates.length > 0 ? /*#__PURE__*/React.createElement("div", {
     style: RNStyles.candidatesBar,
     onChange: e => console.log(e)
   }, /*#__PURE__*/React.createElement("span", {
@@ -364,7 +385,11 @@ function RN_BriefCurrentUrlsZone() {
     onClick: () => setIconCandidate(candidate),
     readOnly: true,
     checked: iconSrc === candidate[1]
-  }), candidate[0] === "" ? "<无关键词>" : candidate[0])))) : /*#__PURE__*/React.createElement(React.Fragment, null), /*#__PURE__*/React.createElement("p", {
+  }), candidate[0] === "" ? "<无关键词>" : candidate[0]))), iconCandidates.length === 1 ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "gray"
+    }
+  }, "\u589E\u52A0\u66F4\u591A\u9009\u9879\u8BF7\u201C\u5C55\u5F00\u8BBE\u7F6E\u201D") : /*#__PURE__*/React.createElement(React.Fragment, null)) : /*#__PURE__*/React.createElement(React.Fragment, null), /*#__PURE__*/React.createElement("p", {
     style: RNStyles.currentUrlStatus
   }, "\u9009\u4E2D\u80CC\u666F\u56FE: ", /*#__PURE__*/React.createElement("span", {
     style: RNStyles.keyword
@@ -376,6 +401,7 @@ function RN_BriefCurrentUrlsZone() {
 }
 
 function RN_BriefControlZone(props) {
+  console.log("# RN_BriefControlZone render.");
   let {
     settingsVisible,
     setSettingsVisible
@@ -411,8 +437,8 @@ function RN_BriefControlZone(props) {
 }
 
 function RN_BriefPicEditor() {
+  console.log("# RN_BriefPicEditor render.");
   const [settingsVisible, setSettingsVisible] = RNState['settingsVisible'] = React.useState(false);
-  console.log("# RN_BriefPicEditor called");
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(RN_BriefCurrentUrlsZone, null), /*#__PURE__*/React.createElement("canvas", {
     width: "600",
     height: "240",
@@ -518,11 +544,13 @@ function AddBriefImgEditor() {
       }
     }
 
-    RNState['iconCandidates'][1](iconCandidates);
+    if (!compareCandidateList(RNState['iconCandidates'][0], iconCandidates)) {
+      RNState['iconCandidates'][1](iconCandidates);
 
-    if (!isIconCandidateValid && iconCandidates.length > 0) {
-      RNState['iconKey'][1](iconCandidates[0][0]);
-      RNState['iconSrc'][1](iconCandidates[0][1]);
+      if (!isIconCandidateValid && iconCandidates.length > 0) {
+        RNState['iconKey'][1](iconCandidates[0][0]);
+        RNState['iconSrc'][1](iconCandidates[0][1]);
+      }
     } //update brief background
 
 
@@ -565,11 +593,13 @@ function AddBriefImgEditor() {
         }
       }
 
-      RNState['backgroundCandidates'][1](backgroundCandidates);
+      if (!compareCandidateList(RNState['backgroundCandidates'][0], backgroundCandidates)) {
+        RNState['backgroundCandidates'][1](backgroundCandidates);
 
-      if (!isBackgroundValid && backgroundCandidates.length > 0) {
-        RNState['backgroundKey'][1](backgroundCandidates[0][0]);
-        RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+        if (!isBackgroundValid && backgroundCandidates.length > 0) {
+          RNState['backgroundKey'][1](backgroundCandidates[0][0]);
+          RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+        }
       }
     } //update is settings dirty
 
@@ -589,8 +619,13 @@ function AddBriefImgEditor() {
       //there's no ?t in new/old src var.
       window.external.getImage(iconSrc, dataUrl => {
         console.log("# dataUrl for Icon recieved.");
-        document.getElementById("brief-iconImage").src = dataUrl;
-        setTimeout(() => drawCanvas(titleInput), 200);
+        let currentSrc = RNState['iconSrc'][0];
+
+        if (currentSrc === iconSrc) {
+          console.log("# dataUrl src for Icon matched.");
+          document.getElementById("brief-iconImage").src = dataUrl;
+          setTimeout(() => drawCanvas(titleInput), 200);
+        }
       });
       oldIconSrc = iconSrc;
     }
@@ -598,8 +633,13 @@ function AddBriefImgEditor() {
     if (backgroundSrc != oldBackgroundSrc) {
       window.external.getImage(backgroundSrc, dataUrl => {
         console.log("# dataUrl for Background recieved.");
-        document.getElementById("brief-backgroundImage").src = dataUrl;
-        setTimeout(() => drawCanvas(titleInput), 200);
+        let currentSrc = RNState['backgroundSrc'][0];
+
+        if (currentSrc === backgroundSrc) {
+          console.log("# dataUrl src for Background matched.");
+          document.getElementById("brief-backgroundImage").src = dataUrl;
+          setTimeout(() => drawCanvas(titleInput), 200);
+        }
       });
       oldBackgroundSrc = backgroundSrc;
     }

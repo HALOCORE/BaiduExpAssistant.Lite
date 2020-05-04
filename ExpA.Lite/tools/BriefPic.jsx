@@ -200,11 +200,21 @@ function saveConfig() {
   }
 }
 
+function compareCandidateList(list1, list2) {
+  if (list1.length !== list2.length) return false;
+  for (let i = 0; i < list1.length; i++) {
+    if (list1[i][0] !== list2[i][0]) return false;
+    if (list1[i][1] !== list2[i][1]) return false;
+  }
+  return true;
+}
+
 function RN_BriefPicSettingZone() {
-  RNState['iconNote'] = React.useState(["最终图标为从上往下找到的第一个关键词匹配。", "darkcyan"]);
+  console.log("# RN_BriefPicSettingZone render.");
+  RNState['iconNote'] = React.useState(["可选图标为从上往下找到的前n个关键词匹配。", "darkcyan"]);
   let iconNote = RNState['iconNote'][0];
 
-  RNState['backgroundNote'] = React.useState(["最终背景图为从上往下找到的第一个关键词匹配。", "darkcyan"])
+  RNState['backgroundNote'] = React.useState(["可选背景图为从上往下找到的前n个关键词匹配。", "darkcyan"])
   let backgroundNote = RNState['backgroundNote'][0];
 
   RNState['useBigPic'] = React.useState(false);
@@ -215,6 +225,7 @@ win = http://image.tianjimedia.com/uploadImages/2016/097/17/U7SP0XU4SSRD_windows
 word = https://cn.bing.com/th?id=OIP.2l4mI6F0_MiyyGcPB-aoYAHaEK&pid=Api&rs=1
 chrome = http://img.mp.sohu.com/upload/20170526/ee6776da5af84cec81f68e3fce9274aa_th.png
 
+= https://cn.bing.com/th?id=OIP.CmLXtzTWO-gE66W3YfzuSQHaE0&pid=Api&rs=1
 = http://b.hiphotos.baidu.com/image/pic/item/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg`);
   let [backgroundUrls, setBackgroundUrls] = RNState['backgroundUrls'];
 
@@ -230,7 +241,8 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     <div>
       <div>
         <p><span style={{ paddingRight: 20 }}>每一行输入格式:</span> <b>关键词=图片链接</b></p>
-        <p><span style={{ paddingRight: 20 }}>最后一行输入格式(表示默认图标或图片):</span> <b>=图片链接</b></p>
+        <p><span style={{ paddingRight: 20 }}>匹配任意标题输入格式:</span> <b>=图片链接</b></p>
+        <p><span style={{ paddingRight: 20 }}>关键词可重复, 多个选项都会出现. </span></p>
       </div>
       <div style={RNStyles.configGroup}>
         <div>
@@ -263,8 +275,8 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
         </textarea>
       </div>
       <p>注意事项：图片图标在浏览器查找，浏览器中右键图片，可以复制图片地址。<br />
-        修改配置后，可以点击“收起设置”按钮左侧的保存按钮。<br />
-        <b>生成简介图后，可以点击一键上传，也可以另存为图片。</b>
+        修改配置后，“收起设置”按钮左侧可以点击保存。<br />
+        <b>生成简介图后，可以一键上传，也可以另存为图片。</b>
       </p>
       <img className="brief-img" style={RNStyles.hiddenImg} id="brief-backgroundImage"></img>
       <img className="brief-img" style={RNStyles.hiddenImg} id="brief-iconImage"></img>
@@ -273,6 +285,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
 }
 
 function RN_BriefCurrentUrlsZone() {
+  console.log("# RN_BriefCurrentUrlsZone render.");
   RNState['backgroundCandidates'] = React.useState([]);
   let backgroundCandidates = RNState['backgroundCandidates'][0];
 
@@ -303,37 +316,39 @@ function RN_BriefCurrentUrlsZone() {
     <div>
       {
         backgroundCandidates.length > 0 ?
-          <div style={RNStyles.candidatesBar} onChange={(e) => console.log(e)}>
-            <span style={{paddingRight: 5}}>可选背景图: </span>
+          <div style={RNStyles.candidatesBar}>
+            <span style={{ paddingRight: 5 }}>可选背景图: </span>
             {
 
               backgroundCandidates.map((candidate) => (
                 <div style={RNStyles.candidateItem} key={candidate[1]}>
                   <label>
-                    <input type="radio" name="background-candidate" style={{paddingRight: 2}}
+                    <input type="radio" name="background-candidate" style={{ paddingRight: 2 }}
                       onClick={() => setBackgroundCandidate(candidate)} readOnly checked={backgroundSrc === candidate[1]} />
                     {candidate[0] === "" ? "<无关键词>" : candidate[0]}
                   </label>
                 </div>
               ))
             }
+            {backgroundCandidates.length === 1 ? <span style={{ color: "gray" }}>增加更多选项请“展开设置”</span> : <></>}
           </div> : <></>
       }
       {
         iconCandidates.length > 0 ?
           <div style={RNStyles.candidatesBar} onChange={(e) => console.log(e)}>
-            <span style={{paddingRight: 5}}>可选图标: </span>
+            <span style={{ paddingRight: 5 }}>可选图标: </span>
             {
               iconCandidates.map((candidate) => (
                 <div style={RNStyles.candidateItem} key={candidate[1]}>
                   <label>
-                    <input type="radio" name="icon-candidate" style={{paddingRight: 2}}
+                    <input type="radio" name="icon-candidate" style={{ paddingRight: 2 }}
                       onClick={() => setIconCandidate(candidate)} readOnly checked={iconSrc === candidate[1]} />
                     {candidate[0] === "" ? "<无关键词>" : candidate[0]}
                   </label>
                 </div>
               ))
             }
+            {iconCandidates.length === 1 ? <span style={{ color: "gray" }}>增加更多选项请“展开设置”</span> : <></>}
           </div> : <></>
       }
       <p style={RNStyles.currentUrlStatus}>选中背景图: <span style={RNStyles.keyword}>{backgroundKey === "" ? "<无关键词>" : backgroundKey}</span> {backgroundSrc}</p>
@@ -343,6 +358,7 @@ function RN_BriefCurrentUrlsZone() {
 }
 
 function RN_BriefControlZone(props) {
+  console.log("# RN_BriefControlZone render.");
   let { settingsVisible, setSettingsVisible } = props;
   const [isAutoWrap, setIsAutoWrap] = RNState['isAutoWrap'] = React.useState(true);
   const [isUploaderHacked] = RNState['isUploaderHacked'] = React.useState(false);
@@ -374,8 +390,8 @@ function RN_BriefControlZone(props) {
 }
 
 function RN_BriefPicEditor() {
+  console.log("# RN_BriefPicEditor render.");
   const [settingsVisible, setSettingsVisible] = RNState['settingsVisible'] = React.useState(false);
-  console.log("# RN_BriefPicEditor called");
   return (
     <div>
       <RN_BriefCurrentUrlsZone />
@@ -474,10 +490,12 @@ function AddBriefImgEditor() {
         if (RNState['iconKey'][0] === p[0]) isIconCandidateValid = true;
       }
     }
-    RNState['iconCandidates'][1](iconCandidates);
-    if (!isIconCandidateValid && iconCandidates.length > 0) {
-      RNState['iconKey'][1](iconCandidates[0][0]);
-      RNState['iconSrc'][1](iconCandidates[0][1]);
+    if (!compareCandidateList(RNState['iconCandidates'][0], iconCandidates)) {
+      RNState['iconCandidates'][1](iconCandidates);
+      if (!isIconCandidateValid && iconCandidates.length > 0) {
+        RNState['iconKey'][1](iconCandidates[0][0]);
+        RNState['iconSrc'][1](iconCandidates[0][1]);
+      }
     }
 
     //update brief background
@@ -515,10 +533,12 @@ function AddBriefImgEditor() {
           if (p[0] === RNState['backgroundKey'][0]) isBackgroundValid = true;
         }
       }
-      RNState['backgroundCandidates'][1](backgroundCandidates);
-      if (!isBackgroundValid && backgroundCandidates.length > 0) {
-        RNState['backgroundKey'][1](backgroundCandidates[0][0]);
-        RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+      if (!compareCandidateList(RNState['backgroundCandidates'][0], backgroundCandidates)) {
+        RNState['backgroundCandidates'][1](backgroundCandidates);
+        if (!isBackgroundValid && backgroundCandidates.length > 0) {
+          RNState['backgroundKey'][1](backgroundCandidates[0][0]);
+          RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+        }
       }
     }
 
@@ -541,16 +561,24 @@ function AddBriefImgEditor() {
     if (iconSrc != oldIconSrc) { //there's no ?t in new/old src var.
       window.external.getImage(iconSrc, (dataUrl) => {
         console.log("# dataUrl for Icon recieved.");
-        document.getElementById("brief-iconImage").src = dataUrl;
-        setTimeout(() => drawCanvas(titleInput), 200);
+        let currentSrc = RNState['iconSrc'][0];
+        if (currentSrc === iconSrc) {
+          console.log("# dataUrl src for Icon matched.");
+          document.getElementById("brief-iconImage").src = dataUrl;
+          setTimeout(() => drawCanvas(titleInput), 200);
+        }
       });
       oldIconSrc = iconSrc;
     }
     if (backgroundSrc != oldBackgroundSrc) {
       window.external.getImage(backgroundSrc, (dataUrl) => {
         console.log("# dataUrl for Background recieved.");
-        document.getElementById("brief-backgroundImage").src = dataUrl;
-        setTimeout(() => drawCanvas(titleInput), 200);
+        let currentSrc = RNState['backgroundSrc'][0];
+        if (currentSrc === backgroundSrc) {
+          console.log("# dataUrl src for Background matched.");
+          document.getElementById("brief-backgroundImage").src = dataUrl;
+          setTimeout(() => drawCanvas(titleInput), 200);
+        }
       });
       oldBackgroundSrc = backgroundSrc;
     }
