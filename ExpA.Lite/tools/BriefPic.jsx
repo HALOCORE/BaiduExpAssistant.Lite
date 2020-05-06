@@ -76,7 +76,7 @@ let RNStyles = {
     border: "2px solid gray"
   },
   keyword: {
-    color: "orange",
+    color: "darkcyan",
     fontWeight: 900,
     padding: "0px 5px"
   },
@@ -220,13 +220,13 @@ function RN_BriefPicSettingZone() {
   RNState['useBigPic'] = React.useState(false);
   let [useBigPic, setUseBigPic] = RNState['useBigPic'];
 
-  RNState['backgroundUrls'] = React.useState(`unity = http://pic.nipic.com/2007-11-02/20071128716391_2.jpg
-win = http://image.tianjimedia.com/uploadImages/2016/097/17/U7SP0XU4SSRD_windows-10-expected-to-beat-windows-7-in-first-12-months-performance-502625-2.jpg
+  RNState['backgroundUrls'] = React.useState(`手机 = https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1797044092,2303584770&fm=26&gp=0.jpg
+win = https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3511096425,263250315&fm=26&gp=0.jpg
 word = https://cn.bing.com/th?id=OIP.2l4mI6F0_MiyyGcPB-aoYAHaEK&pid=Api&rs=1
 chrome = http://img.mp.sohu.com/upload/20170526/ee6776da5af84cec81f68e3fce9274aa_th.png
 
-= https://cn.bing.com/th?id=OIP.CmLXtzTWO-gE66W3YfzuSQHaE0&pid=Api&rs=1
-= http://b.hiphotos.baidu.com/image/pic/item/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg`);
+= http://bpic.588ku.com/back_pic/00/01/71/385608b3bfcbbd0.jpg
+= https://ak6.picdn.net/shutterstock/videos/2991016/thumb/1.jpg`);
   let [backgroundUrls, setBackgroundUrls] = RNState['backgroundUrls'];
 
   RNState['iconUrls'] = React.useState(`word = https://www.easyicon.net/api/resizeApi.php?id=1212930&size=128
@@ -304,13 +304,26 @@ function RN_BriefCurrentUrlsZone() {
   RNState['iconSrc'] = React.useState("https://www.easyicon.net/api/resizeApi.php?id=1236657&size=128");
   let iconSrc = RNState['iconSrc'][0];
 
+  RNState['isBackgroundUserSelected'] = React.useState(false);
+  RNState['isIconUserSelected'] = React.useState(false);
+  RNState['iconStatus'] = React.useState("loading");
+  RNState['backgroundStatus'] = React.useState("loading");
+
   function setBackgroundCandidate(candidate) {
     RNState['backgroundKey'][1](candidate[0]);
     RNState['backgroundSrc'][1](candidate[1]);
+    RNState['isBackgroundUserSelected'][1](true);
   }
   function setIconCandidate(candidate) {
     RNState['iconKey'][1](candidate[0]);
     RNState['iconSrc'][1](candidate[1]);
+    RNState['isIconUserSelected'][1](true);
+  }
+  function statusToColor(status) {
+    if(status === "failed") return "red";
+    if(status === "succeed") return "green";
+    if(status === "loading") return "orange";
+    return "black";
   }
   return (
     <div>
@@ -351,8 +364,14 @@ function RN_BriefCurrentUrlsZone() {
             {iconCandidates.length === 1 ? <span style={{ color: "gray" }}>增加更多选项请“展开设置”</span> : <></>}
           </div> : <></>
       }
-      <p style={RNStyles.currentUrlStatus}>选中背景图: <span style={RNStyles.keyword}>{backgroundKey === "" ? "<无关键词>" : backgroundKey}</span> {backgroundSrc}</p>
-      <p style={RNStyles.currentUrlStatus}>选中图标: <span style={RNStyles.keyword}>{iconKey === "" ? "<无关键词>" : iconKey}</span> {iconSrc}</p>
+      <p style={RNStyles.currentUrlStatus}>选中背景图
+        <span style={{fontWeight:900, color: statusToColor(RNState['backgroundStatus'][0])}}>({RNState['backgroundStatus'][0]})</span>: 
+        <span style={RNStyles.keyword}>{backgroundKey === "" ? "<无关键词>" : backgroundKey}</span> {backgroundSrc}
+      </p>
+      <p style={RNStyles.currentUrlStatus}>选中图标
+        <span style={{fontWeight:900, color: statusToColor(RNState['iconStatus'][0])}}>({RNState['iconStatus'][0]})</span>:
+        <span style={RNStyles.keyword}>{iconKey === "" ? "<无关键词>" : iconKey}</span> {iconSrc}
+      </p>
     </div>
   )
 }
@@ -492,9 +511,11 @@ function AddBriefImgEditor() {
     }
     if (!compareCandidateList(RNState['iconCandidates'][0], iconCandidates)) {
       RNState['iconCandidates'][1](iconCandidates);
-      if (!isIconCandidateValid && iconCandidates.length > 0) {
+      if ((!isIconCandidateValid || !RNState['isIconUserSelected'][0]) && iconCandidates.length > 0) {
         RNState['iconKey'][1](iconCandidates[0][0]);
         RNState['iconSrc'][1](iconCandidates[0][1]);
+        RNState['iconStatus'][1]("loading");
+        RNState['isIconUserSelected'][1](false);
       }
     }
 
@@ -535,9 +556,11 @@ function AddBriefImgEditor() {
       }
       if (!compareCandidateList(RNState['backgroundCandidates'][0], backgroundCandidates)) {
         RNState['backgroundCandidates'][1](backgroundCandidates);
-        if (!isBackgroundValid && backgroundCandidates.length > 0) {
+        if ((!isBackgroundValid || !RNState['isBackgroundUserSelected'][0]) && backgroundCandidates.length > 0) {
           RNState['backgroundKey'][1](backgroundCandidates[0][0]);
           RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+          RNState['backgroundStatus'][1]("loading");
+          RNState['isBackgroundUserSelected'][1](false);
         }
       }
     }
@@ -559,25 +582,41 @@ function AddBriefImgEditor() {
     oldCompInputVal = newCompInputVal;
 
     if (iconSrc != oldIconSrc) { //there's no ?t in new/old src var.
+      RNState['iconStatus'][1]("loading");
       window.external.getImage(iconSrc, (dataUrl) => {
         console.log("# dataUrl for Icon recieved.");
         let currentSrc = RNState['iconSrc'][0];
         if (currentSrc === iconSrc) {
           console.log("# dataUrl src for Icon matched.");
+          RNState['iconStatus'][1]("succeed");
           document.getElementById("brief-iconImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+        }
+      }, (msg) => {
+        console.error("# getImage icon failed: " + msg);
+        let currentSrc = RNState['iconSrc'][0];
+        if (currentSrc == iconSrc) {
+          RNState['iconStatus'][1]("failed");
         }
       });
       oldIconSrc = iconSrc;
     }
     if (backgroundSrc != oldBackgroundSrc) {
+      RNState['backgroundStatus'][1]("loading");
       window.external.getImage(backgroundSrc, (dataUrl) => {
         console.log("# dataUrl for Background recieved.");
         let currentSrc = RNState['backgroundSrc'][0];
         if (currentSrc === backgroundSrc) {
           console.log("# dataUrl src for Background matched.");
+          RNState['backgroundStatus'][1]("succeed");
           document.getElementById("brief-backgroundImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+        }
+      }, (msg) => {
+        console.error("# getImage background failed: " + msg);
+        let currentSrc = RNState['backgroundSrc'][0];
+        if (currentSrc == backgroundSrc) {
+          RNState['backgroundStatus'][1]("failed");
         }
       });
       oldBackgroundSrc = backgroundSrc;
