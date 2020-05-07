@@ -546,13 +546,14 @@ function AddBriefImgEditor() {
       pairs = lines.map(x => x.split("=")).map(y => [y[0], y.slice(1).join("=")].map(z => z.trim()));
 
       for (let elem of pairs) {
-        if (elem.length != 2) throw "error";
-        if (!elem[1].startsWith("http") && !elem[1].startsWith("ms-appdata")) throw "error";
+        if (elem.length != 2) throw "每一行的格式是: 关键词=链接";
+        ;
+        if (!elem[1].startsWith("http://") && !elem[1].startsWith("https://") && !elem[1].startsWith("nocache-http://") && !elem[1].startsWith("nocache-https://") && !elem[1].startsWith("local://")) throw elem[1];
       }
 
       iconShowNote();
     } catch (e) {
-      iconShowNote("输入格式不正确!", "red");
+      iconShowNote("输入格式不正确. " + e.toString(), "red");
     } //update ICON candidates and key src.
 
 
@@ -570,10 +571,12 @@ function AddBriefImgEditor() {
       RNState['iconCandidates'][1](iconCandidates);
 
       if ((!isIconCandidateValid || !RNState['isIconUserSelected'][0]) && iconCandidates.length > 0) {
-        RNState['iconKey'][1](iconCandidates[0][0]);
-        RNState['iconSrc'][1](iconCandidates[0][1]);
-        RNState['iconStatus'][1]("loading");
-        RNState['isIconUserSelected'][1](false);
+        if (RNState['iconKey'][0] !== iconCandidates[0][0] || RNState['iconSrc'][0] !== iconCandidates[0][1]) {
+          RNState['iconKey'][1](iconCandidates[0][0]);
+          RNState['iconSrc'][1](iconCandidates[0][1]);
+          RNState['iconStatus'][1]("loading");
+          RNState['isIconUserSelected'][1](false);
+        }
       }
     } //update brief background
 
@@ -586,13 +589,14 @@ function AddBriefImgEditor() {
       pairs = lines.map(x => x.split("=")).map(y => [y[0], y.slice(1).join("=")].map(z => z.trim()));
 
       for (let elem of pairs) {
-        if (elem.length != 2) throw "error";
-        if (!elem[1].startsWith("http") && !elem[1].startsWith("ms-appdata")) throw "error";
+        if (elem.length != 2) throw "每一行的格式是: 关键词=链接";
+        ;
+        if (!elem[1].startsWith("http://") && !elem[1].startsWith("https://") && !elem[1].startsWith("nocache-http://") && !elem[1].startsWith("nocache-https://") && !elem[1].startsWith("local://")) throw elem[1];
       }
 
       backgroundShowNote();
     } catch (e) {
-      backgroundShowNote("输入格式不正确!", "red");
+      backgroundShowNote("输入格式不正确. " + e.toString(), "red");
     } //update BACKGROUND candidates and key src
 
 
@@ -621,10 +625,12 @@ function AddBriefImgEditor() {
         RNState['backgroundCandidates'][1](backgroundCandidates);
 
         if ((!isBackgroundValid || !RNState['isBackgroundUserSelected'][0]) && backgroundCandidates.length > 0) {
-          RNState['backgroundKey'][1](backgroundCandidates[0][0]);
-          RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
-          RNState['backgroundStatus'][1]("loading");
-          RNState['isBackgroundUserSelected'][1](false);
+          if (RNState['backgroundKey'][0] !== backgroundCandidates[0][0] || RNState['backgroundSrc'][0] !== backgroundCandidates[0][1]) {
+            RNState['backgroundKey'][1](backgroundCandidates[0][0]);
+            RNState['backgroundSrc'][1](backgroundCandidates[0][1]);
+            RNState['backgroundStatus'][1]("loading");
+            RNState['isBackgroundUserSelected'][1](false);
+          }
         }
       }
     } //update is settings dirty
@@ -812,8 +818,8 @@ function drawRoundRectPath(cxt, width, height, radius) {
     AddBriefImgEditor();
     window.external.notify("2ND-GOTO: https://www.easyicon.net/");
     setTimeout(TryLoadSettings, 100); //no reason yet.
+    //window.external.notify("NOTIFY: 添加成功 | 简介图已载入 | OK");
 
-    window.external.notify("NOTIFY: 添加成功 | 大图片框和简介图已载入 | OK");
     let isSaveConfigCanceled = false;
     document.getElementById("submit").addEventListener("mouseenter", () => {
       let isDirty = isSettingsDirty();
@@ -832,7 +838,7 @@ function drawRoundRectPath(cxt, width, height, radius) {
     emm.innerText = e.message;
 
     try {
-      window.external.notify("SHOW-DIALOG: 添加大图片框失败 | 可能的原因:\n1. 当前页面可能不是编辑器页面\n2. 代码运行出错" + emm.innerText.replace("|", " I "));
+      window.external.notify("SHOW-DIALOG: 简介图初始化失败 | 可联系开发者1223989563@qq.com. 代码运行出错" + emm.innerText.replace("|", " I "));
     } catch (e2) {}
 
     ;
