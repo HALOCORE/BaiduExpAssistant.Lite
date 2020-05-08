@@ -93,6 +93,12 @@ let RNStyles = {
     padding: "2px 4px",
     margin: "2px 4px",
     fontSize: 12
+  },
+  linkButton: {
+    padding: "1px 3px",
+    marginLeft: "5px",
+    fontSize: 14,
+    color: "darkblue"
   }
 };
 
@@ -225,8 +231,8 @@ win = https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3511096425,26325
 word = https://cn.bing.com/th?id=OIP.2l4mI6F0_MiyyGcPB-aoYAHaEK&pid=Api&rs=1
 chrome = http://img.mp.sohu.com/upload/20170526/ee6776da5af84cec81f68e3fce9274aa_th.png
 
-= http://bpic.588ku.com/back_pic/00/01/71/385608b3bfcbbd0.jpg
-= https://ak6.picdn.net/shutterstock/videos/2991016/thumb/1.jpg`);
+= https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=342786909,3873323405&fm=11&gp=0.jpg
+= http://bpic.588ku.com/back_pic/00/01/71/385608b3bfcbbd0.jpg`);
   let [backgroundUrls, setBackgroundUrls] = RNState['backgroundUrls'];
 
   RNState['iconUrls'] = React.useState(`word = https://www.easyicon.net/api/resizeApi.php?id=1212930&size=128
@@ -243,13 +249,18 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
         <p><span style={{ paddingRight: 20 }}>每一行输入格式:</span> <b>关键词=图片链接</b></p>
         <p><span style={{ paddingRight: 20 }}>匹配任意标题输入格式:</span> <b>=图片链接</b></p>
         <p><span style={{ paddingRight: 20 }}>关键词可重复, 多个选项都会出现. </span></p>
+        <p>更多详细说明:
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://jingyan.baidu.com/article/08b6a591e624ca55a80922ec.html')}>基本设置说明</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://jingyan.baidu.com/article/066074d68e776182c21cb0ec.html')}>如何使用本地图片</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://jingyan.baidu.com/article/22a299b50705efdf19376aed.html')}>如何禁止图片缓存</button>
+        </p>
       </div>
       <div style={RNStyles.configGroup}>
         <div>
           <span>背景图：</span>
-          <button onClick={() => launchUrl('https://image.baidu.com/')}>百度图片</button>
-          <button onClick={() => launchUrl('https://cn.bing.com/images/')}>Bing图片</button>
-          <button onClick={() => launchUrl('https://pic.sogou.com/')}>搜狗图片</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://image.baidu.com/')}>百度图片</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://cn.bing.com/images/')}>Bing图片</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://pic.sogou.com/')}>搜狗图片</button>
         </div>
         <div>
           <input checked={useBigPic} onChange={() => setUseBigPic(!useBigPic)}
@@ -265,7 +276,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
       <div style={RNStyles.configGroup}>
         <div>
           <span>图标：</span>
-          <button onClick={() => launchUrl('https://www.easyicon.net/')}>图标网站</button>
+          <button style={RNStyles.linkButton} onClick={() => launchUrl('https://www.easyicon.net/')}>图标网站</button>
         </div>
         <div style={RNStyles.noteA}>
           <span style={{ color: iconNote[1] }}>{iconNote[0]}</span>
@@ -603,6 +614,7 @@ function AddBriefImgEditor() {
           RNState['iconStatus'][1]("succeed");
           document.getElementById("brief-iconImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+          setTimeout(() => drawCanvas(titleInput), 600);
         }
       }, (msg) => {
         console.error("# getImage icon failed: " + msg);
@@ -623,6 +635,7 @@ function AddBriefImgEditor() {
           RNState['backgroundStatus'][1]("succeed");
           document.getElementById("brief-backgroundImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+          setTimeout(() => drawCanvas(titleInput), 600);
         }
       }, (msg) => {
         console.error("# getImage background failed: " + msg);
@@ -749,7 +762,7 @@ function drawRoundRectPath(cxt, width, height, radius) {
   try {
     // AddMyImg();
     AddBriefImgEditor();
-    window.external.notify("2ND-GOTO: https://www.easyicon.net/");
+    //window.external.notify("2ND-GOTO: https://www.easyicon.net/");
     setTimeout(TryLoadSettings, 100); //no reason yet.
     //window.external.notify("NOTIFY: 添加成功 | 简介图已载入 | OK");
     let isSaveConfigCanceled = false;

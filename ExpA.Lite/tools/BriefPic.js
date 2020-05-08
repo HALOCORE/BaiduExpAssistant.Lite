@@ -93,6 +93,12 @@ let RNStyles = {
     padding: "2px 4px",
     margin: "2px 4px",
     fontSize: 12
+  },
+  linkButton: {
+    padding: "1px 3px",
+    marginLeft: "5px",
+    fontSize: 14,
+    color: "darkblue"
   }
 };
 
@@ -244,8 +250,8 @@ win = https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3511096425,26325
 word = https://cn.bing.com/th?id=OIP.2l4mI6F0_MiyyGcPB-aoYAHaEK&pid=Api&rs=1
 chrome = http://img.mp.sohu.com/upload/20170526/ee6776da5af84cec81f68e3fce9274aa_th.png
 
-= http://bpic.588ku.com/back_pic/00/01/71/385608b3bfcbbd0.jpg
-= https://ak6.picdn.net/shutterstock/videos/2991016/thumb/1.jpg`);
+= https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=342786909,3873323405&fm=11&gp=0.jpg
+= http://bpic.588ku.com/back_pic/00/01/71/385608b3bfcbbd0.jpg`);
   let [backgroundUrls, setBackgroundUrls] = RNState['backgroundUrls'];
   RNState['iconUrls'] = React.useState(`word = https://www.easyicon.net/api/resizeApi.php?id=1212930&size=128
 谷歌浏览器 = https://www.easyicon.net/api/resizeApi.php?id=1212918&size=128
@@ -266,13 +272,25 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
     style: {
       paddingRight: 20
     }
-  }, "\u5173\u952E\u8BCD\u53EF\u91CD\u590D, \u591A\u4E2A\u9009\u9879\u90FD\u4F1A\u51FA\u73B0. "))), /*#__PURE__*/React.createElement("div", {
+  }, "\u5173\u952E\u8BCD\u53EF\u91CD\u590D, \u591A\u4E2A\u9009\u9879\u90FD\u4F1A\u51FA\u73B0. ")), /*#__PURE__*/React.createElement("p", null, "\u66F4\u591A\u8BE6\u7EC6\u8BF4\u660E:", /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
+    onClick: () => launchUrl('https://jingyan.baidu.com/article/08b6a591e624ca55a80922ec.html')
+  }, "\u57FA\u672C\u8BBE\u7F6E\u8BF4\u660E"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
+    onClick: () => launchUrl('https://jingyan.baidu.com/article/066074d68e776182c21cb0ec.html')
+  }, "\u5982\u4F55\u4F7F\u7528\u672C\u5730\u56FE\u7247"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
+    onClick: () => launchUrl('https://jingyan.baidu.com/article/22a299b50705efdf19376aed.html')
+  }, "\u5982\u4F55\u7981\u6B62\u56FE\u7247\u7F13\u5B58"))), /*#__PURE__*/React.createElement("div", {
     style: RNStyles.configGroup
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\u80CC\u666F\u56FE\uFF1A"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
     onClick: () => launchUrl('https://image.baidu.com/')
   }, "\u767E\u5EA6\u56FE\u7247"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
     onClick: () => launchUrl('https://cn.bing.com/images/')
   }, "Bing\u56FE\u7247"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
     onClick: () => launchUrl('https://pic.sogou.com/')
   }, "\u641C\u72D7\u56FE\u7247")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
     checked: useBigPic,
@@ -296,6 +314,7 @@ win = https://www.easyicon.net/api/resizeApi.php?id=1229085&size=128
   })), /*#__PURE__*/React.createElement("div", {
     style: RNStyles.configGroup
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\u56FE\u6807\uFF1A"), /*#__PURE__*/React.createElement("button", {
+    style: RNStyles.linkButton,
     onClick: () => launchUrl('https://www.easyicon.net/')
   }, "\u56FE\u6807\u7F51\u7AD9")), /*#__PURE__*/React.createElement("div", {
     style: RNStyles.noteA
@@ -659,6 +678,7 @@ function AddBriefImgEditor() {
           RNState['iconStatus'][1]("succeed");
           document.getElementById("brief-iconImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+          setTimeout(() => drawCanvas(titleInput), 600);
         }
       }, msg => {
         console.error("# getImage icon failed: " + msg);
@@ -682,6 +702,7 @@ function AddBriefImgEditor() {
           RNState['backgroundStatus'][1]("succeed");
           document.getElementById("brief-backgroundImage").src = dataUrl;
           setTimeout(() => drawCanvas(titleInput), 200);
+          setTimeout(() => drawCanvas(titleInput), 600);
         }
       }, msg => {
         console.error("# getImage background failed: " + msg);
@@ -815,8 +836,8 @@ function drawRoundRectPath(cxt, width, height, radius) {
 (function () {
   try {
     // AddMyImg();
-    AddBriefImgEditor();
-    window.external.notify("2ND-GOTO: https://www.easyicon.net/");
+    AddBriefImgEditor(); //window.external.notify("2ND-GOTO: https://www.easyicon.net/");
+
     setTimeout(TryLoadSettings, 100); //no reason yet.
     //window.external.notify("NOTIFY: 添加成功 | 简介图已载入 | OK");
 
