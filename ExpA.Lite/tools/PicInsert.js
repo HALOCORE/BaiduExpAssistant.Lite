@@ -8,7 +8,7 @@ setTimeout(function () {
         var currentNum = 0;
         try {
             document.body.style.position = "fixed";
-            for (var i in imgs) {
+            for (let i = 0; i < imgs.length; i++) {
                 //imgs[i].addEventListener("mousemove", (e) => {console.log("img[", i, "] event:", e);})
                 if (parseInt(i) + parseInt(jmpCount) < holds.length) {
                     var rt = imgs[i].getBoundingClientRect();
