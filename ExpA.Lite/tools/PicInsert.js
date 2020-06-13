@@ -2,8 +2,8 @@ console.log("========== PicInsert.js ==========");
 setTimeout(function () {
     "use strict";
     function* autoinsertPictures(jmpCount) {
-        var imgs = document.getElementsByClassName("step-media-item item-media-image");
-        var holds = document.getElementsByClassName("step-gallery-list gallery-list cf ui-sortable");
+        var imgs = document.getElementsByClassName("ga-list");//("step-media-item item-media-image");
+        var holds = document.getElementsByClassName("step-gallery-list gallery-list"); //("step-gallery-list gallery-list cf ui-sortable");
         var totalNum = imgs.length;
         var currentNum = 0;
         try {
@@ -89,12 +89,13 @@ setTimeout(function () {
     
     (function () {
         if (document.getElementById("pic-insert-panel")) return;
-        var picker = document.getElementById("picker");
+        var picker = document.getElementById("gallery-bar");
         var insertPanel = document.createElement("div");
         insertPanel.id = "pic-insert-panel";
-        insertPanel.style.position = "relative";
+        insertPanel.style.position = "absolute";
+        insertPanel.style.top = "80px";
         insertPanel.innerHTML = `
-        <div style="left: -82%; position: relative;">
+        <div style="left: -100%; position: relative;">
         <button id="insert-pics-button0" style="padding: 10px 10px; line-height: 1; display: block;">
         插入图片<br><span style="font-size: 10px;">包括简介位置</span>
         </button>
