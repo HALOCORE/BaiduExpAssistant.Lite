@@ -5,15 +5,19 @@ console.log("========== BigPic.js ==========");
         myoldbox.parentNode.removeChild(myoldbox);
     }
     var box = document.createElement("div");
-    box.className = "img-preview";
+    // box.className = "img-preview";
     box.id = "my-img-preview";
     box.style.left = 200.183 + "px";
-    box.style.bottom = 140.717 + "px";
+    box.style.top = 270.717 + "px";
     box.style.display = "block";
     box.style.position = "fixed";
     box.style.width = 400 + 12 + "px";
     box.style.minHeight = "190px";
-    box.innerHTML = '<div class="img-wrapper" style="width:400px; min-height: 178px; user-select: none; -webkit-user-select: none; -ms-user-select: none;">' +
+    box.style.boxShadow = "1px 3px 6px 1px darkgrey";
+    box.style.zIndex = 99999;
+    box.style.background = "floralwhite";
+    box.style.padding = "2px";
+    box.innerHTML = '<div class="my-img-wrapper" style="width:400px; min-height: 178px; user-select: none; -webkit-user-select: none; -ms-user-select: none;">' +
         '<div id="imgbox-help" style="margin:20px; float:left;">'
         + '<b>1. \u6B64\u6846\u53EF\u81EA\u7531\u62D6\u62FD</b>'
         + '<p>2. \u5C06\u9F20\u6807\u653E\u5728\u67D0\u4E2A\u5C0F\u56FE\u4E0A\uFF0C\u7B49\u51FA\u73B0\u5F39\u51FA\u56FE\u7247</p>'
@@ -32,7 +36,7 @@ console.log("========== BigPic.js ==========");
     document.body.appendChild(box);
     document.querySelector("#myimg-bigger").addEventListener("click", function (e) {
         e.preventDefault();
-        var wp = box.getElementsByClassName('img-wrapper')[0];
+        var wp = box.getElementsByClassName('my-img-wrapper')[0];
         var width = parseInt(wp.style.width);
         wp.style.width = (width * 1.1) + 'px';
         var pr = box.getElementsByClassName('pr')[0];
@@ -41,7 +45,7 @@ console.log("========== BigPic.js ==========");
     });
     document.querySelector("#myimg-smaller").addEventListener("click", function (e) {
         e.preventDefault();
-        var wp = box.getElementsByClassName('img-wrapper')[0];
+        var wp = box.getElementsByClassName('my-img-wrapper')[0];
         var width = parseInt(wp.style.width);
         wp.style.width = (width * 0.91) + 'px';
         var pr = box.getElementsByClassName('pr')[0];
@@ -71,8 +75,11 @@ console.log("========== BigPic.js ==========");
         box.style.display = "block";
         var myimg = document.getElementById("my-bigimg");
         var oribox = document.getElementById("img-preview-box");
-        if (oribox.childElementCount > 0)
-            myimg.src = oribox.children[0].src;
+        if (oribox.childElementCount > 0){
+            let bgurl = oribox.children[0].style.background.split("url(\"")[1].split("\")")[0];
+            console.log("# bgurl:", bgurl);
+            myimg.src = bgurl;
+        }
         updateSize();
     });
 
