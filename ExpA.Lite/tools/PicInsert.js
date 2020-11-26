@@ -94,8 +94,9 @@ setTimeout(function () {
         insertPanel.id = "pic-insert-panel";
         insertPanel.style.position = "absolute";
         insertPanel.style.top = "80px";
+        insertPanel.style.zIndex = "-1000";
         insertPanel.innerHTML = `
-        <div style="left: -100%; position: relative;">
+        <div style="left: -100%; position: relative; z-index: 1000;">
         <button id="insert-pics-button0" style="padding: 10px 10px; line-height: 1; display: block;">
         插入图片<br><span style="font-size: 10px;">包括简介位置</span>
         </button>
